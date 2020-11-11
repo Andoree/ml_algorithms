@@ -86,23 +86,31 @@ def is_point_far_enough_from_others(point, other_points, min_distance):
 def main():
     np.random.seed(42)
     num_samples = 1000
-    dataset = numpy.empty(shape=(num_samples, 2), dtype=np.float)
+    num_variables = 2
+    scale_x = 100
+    scale_y = 300
+    x_cluster_center_distance_std = 30
+    y_cluster_center_distance_std = 30
     num_clusters = 10
+    dataset = numpy.empty(shape=(num_samples, num_variables), dtype=np.float)
     samples_per_cluster = num_samples // num_clusters
     for cluster_id in range(num_clusters):
         # генерируем потенциальные кластеры как множество точек, чьи обе координаты
         # нормально распределены вокруг некоторой случайной точки из равномерного распределения
-        center_x = np.random.uniform(100 * cluster_id, 100 * (cluster_id + 1))
-        center_y = np.random.uniform(300 * (cluster_id % 3), 300 * (cluster_id % 3 + 1))
+        center_x = np.random.uniform(scale_x * cluster_id, scale_x * (cluster_id + 1))
+        center_y = np.random.uniform(scale_y * (cluster_id % 3), scale_y * (cluster_id % 3 + 1))
 
         for i in range(samples_per_cluster):
-            noize_x = np.random.normal(0, 30)
-            noize_y = np.random.normal(0, 30)
+            noize_x = np.random.normal(0, x_cluster_center_distance_std)
+            noize_y = np.random.normal(0, y_cluster_center_distance_std)
 
             dataset[cluster_id * samples_per_cluster + i][0] = center_x + noize_x
             dataset[cluster_id * samples_per_cluster + i][1] = center_y + noize_y
     np.random.shuffle(dataset)
-    model = KmeansModel(n_clusters=10, n_init=50, num_iter=25)
+    num_model_clusters = 10
+    num_init = 50
+    num_iter = 25
+    model = KmeansModel(n_clusters=num_model_clusters, n_init=num_init, num_iter=num_iter)
     model.fit(dataset)
     clusters = model.predict(dataset)
     plt.scatter(dataset[:, 0], dataset[:, 1], c=clusters)
