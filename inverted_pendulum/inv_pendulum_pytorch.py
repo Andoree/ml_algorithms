@@ -1,5 +1,6 @@
 import os
 import random
+from argparse import ArgumentParser
 
 import gym
 import matplotlib.pyplot as plt
@@ -146,7 +147,14 @@ def train(target_model, eval_model, trainloader, criterion, optimizer, device, n
 
 
 def main():
-    mode = "test"
+    parser = ArgumentParser()
+    parser.add_argument('--mode', default=r"test")
+    parser.add_argument('--test_model', required=False, default="ep_167_model.pth")
+    parser.add_argument('--models_dir', default=r"models/")
+    args = parser.parse_args()
+    mode = args.mode
+    models_dir = args.models_dir
+
     # Используется среда для задачи перевернутого маятника от OpenAI:
     # gym.openai.com
     env = gym.make('CartPole-v0')
@@ -156,12 +164,12 @@ def main():
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(eval_model.parameters(), lr=1e-2)
     train_samples = []
-    models_dir = "models_sample_only/"
+
     if not os.path.exists(models_dir):
         os.makedirs(models_dir)
 
     if mode == "test":
-        model_name = "ep_167_model.pth"
+        model_name = args.test_model
         model_path = os.path.join(models_dir, model_name)
         eval_model.load_state_dict(torch.load(model_path))
         target_model.load_state_dict(torch.load(model_path))
