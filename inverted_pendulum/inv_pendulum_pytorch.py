@@ -17,10 +17,8 @@ def get_model():
                          nn.Linear(30, 2))
 
 
-# Create data set
-class RLDataset(Dataset):
+class EnvironmentInteractionsDataset(Dataset):
     def __init__(self, samples, ):
-        # samples = [(s,a,r,s_), ...]
         self.samples = self.transform(samples)
 
     def __getitem__(self, index):
@@ -195,7 +193,7 @@ def main():
                 print(f"Epoch {i + 1}, saved model")
                 model_path = os.path.join(models_dir, f"ep_{i}_model.pth")
                 torch.save(eval_model.state_dict(), model_path)
-            train_data_set = RLDataset(train_samples)
+            train_data_set = EnvironmentInteractionsDataset(train_samples)
             train_data_loader = torch.utils.data.DataLoader(train_data_set, batch_size=32, shuffle=True, num_workers=0,
                                                             pin_memory=True)
             gamma = np.float(0.9)
